@@ -1,33 +1,37 @@
 #!/usr/bin/python3
-"""Module that factorize as many numbers as possible
- into a product of two smaller numbers."""
-from sys import argv
 
+import sys
+import os
+if len(sys.argv) != 2:
+    print("Usage:", sys.argv[0], "file")
+    exit(1)
+if not os.path.isfile(sys.argv[1]):
+    print(sys.argv[0]+":", "File", sys.argv[1], "not found.")
+    exit(1)
+def rho(n, c):
+    t = 2
+    h = 2
+    d = 1
 
-def factorize(value):
-    """"print a simple descomposition of an integer > 1"""
-    i = 2
+    while d == 1:
+        t = (t*t + c) % n
+        h = (h*h + c) % n
+        h = (h*h + c) % n
+        d = gcd(t-h, n)
 
-    if value < 2:
-        return
-    print()
-    print(value, "<- value-bef")
-    while value % i:
-        i += 1
-    print("{:.0f}={:.0f}*{:.0f}".format(value, value / i, i))
-    print(value, "<- value-aft")
-    print()
-
-if len(argv) != 2:
-    exit()
-
-try:
-    with open(argv[1]) as file:
-        line = file.readline()
-
-        while line != "":
-            value = int(line.split('\n')[0])
-            factorize(value)
-            line = file.readline()
-except:
-    pass
+    if d == n:
+        return rho(n, c+1)
+    return d
+def gcd(a,b):
+    if(b==0):
+        return a
+    else:
+        return gcd(b,a%b)
+with open(sys.argv[1]) as f:
+    for to_factor in f:
+        to_factor = int(to_factor)
+        if not to_factor % 2:
+            print("{}={}*2".format(to_factor, to_factor // 2))
+            continue
+        mul=rho(to_factor, 1)
+        print("{}={}*{}".format(to_factor, to_factor // mul, mul))
